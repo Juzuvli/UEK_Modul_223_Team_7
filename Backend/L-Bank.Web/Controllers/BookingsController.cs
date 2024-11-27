@@ -1,40 +1,41 @@
-﻿using L_Bank_W_Backend.Models;
+﻿using L_Bank_W_Backend.Core.Models;
+using L_Bank_W_Backend.DbAccess.Repositories;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using L_Bank_W_Backend.Core.Models;
 
 namespace L_Bank_W_Backend.Controllers
 {
-
     [ApiController]
     [Route("api/v1/[controller]")]
     public class BookingsController : ControllerBase
     {
         private readonly IBookingRepository bookingRepository;
-        
-        BookingsController(IBookingRepository bookingRepository)
+
+        public BookingsController(IBookingRepository bookingRepository)
         {
-            this.bookingRepository = bookingRepository;
+            this.bookingRepository = bookingRepository ?? throw new ArgumentNullException(nameof(bookingRepository));
         }
-        
+
         [HttpPost]
         [Authorize(Roles = "Administrators")]
-        public async Task<IActionResult> Post([FromBody(EmptyBodyBehavior = EmptyBodyBehavior.Allow)] Booking booking)
+        public async Task<IActionResult> Post([FromBody] Booking booking)
         {
-            return await Task.Run(() =>
+            if (booking == null || !ModelState.IsValid)
             {
-                IActionResult response = Ok();
+                return BadRequest("Invalid booking data.");
+            }
 
-                // Rufen Sie "book" im "BookingService auf.
-                // Geben Sie je nach Erfolg OK() oder Conflict() zurück
-                return response;
-            });
+            try
+            {
+                bool success = await Task.Run(() =>
+                    bookingRepository.Book(booking.SourceId, booking.DestinationId, booking.Amount));
+
+                return success ? Ok("Booking successful.") : Conflict("Insufficient funds or transaction failed.");
+            }
+            catch (Exception ex)
+            {
+                return Conflict($"An error occurred: {ex.Message}");
+            }
         }
     }
-
 }

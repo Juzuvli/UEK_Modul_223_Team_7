@@ -1,8 +1,7 @@
 ﻿using System.Security.Claims;
-using L_Bank_W_Backend.Core.Models;
 using L_Bank_W_Backend.DbAccess;
 using L_Bank_W_Backend.DbAccess.Repositories;
-using L_Bank_W_Backend.Models;
+using L_Bank_W_Backend.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -19,7 +18,7 @@ namespace L_Bank_W_Backend.Controllers
         {
             this.ledgerRepository = ledgerRepository;
         }
-        
+
         [HttpGet]
         [Authorize(Roles = "Administrators,Users")]
         public async Task<IEnumerable<Ledger>> Get()

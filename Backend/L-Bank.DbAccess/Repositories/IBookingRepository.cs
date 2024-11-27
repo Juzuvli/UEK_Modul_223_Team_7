@@ -1,6 +1,7 @@
-namespace L_Bank_W_Backend.Models;
-
-public interface IBookingRepository
+namespace L_Bank_W_Backend.DbAccess.Repositories
 {
-    // bool Book(int sourceLedgerId, int destinationLedgerId, decimal amount);
+    public interface IBookingRepository
+    {
+        bool Book(int sourceId, int destinationId, decimal amount);
+    }
 }
