@@ -1,4 +1,4 @@
-﻿using L_Bank_W_Backend.Models;
+﻿using L_Bank_W_Backend.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using L_Bank_W_Backend.Core.Models;
 using L_Bank_W_Backend.Dto;
 using L_Bank_W_Backend.Services;
 
@@ -25,7 +24,7 @@ namespace L_Bank_W_Backend.Controllers
             this.userRepository = userRepository ?? throw new System.ArgumentNullException(nameof(userRepository));
             this.loginService = loginService ?? throw new System.ArgumentNullException(nameof(loginService));
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> Post([FromBody(EmptyBodyBehavior = EmptyBodyBehavior.Allow)] LoginDto login)
         {
@@ -34,7 +33,7 @@ namespace L_Bank_W_Backend.Controllers
                 IActionResult response;
 
                 User? user = this.userRepository.Authenticate(login.Username, login.Password);
-                
+
                 if (user == null)
                 {
                     response = Unauthorized();
@@ -43,7 +42,7 @@ namespace L_Bank_W_Backend.Controllers
                 {
                     response = Ok(new { token = this.loginService.CreateJwt(user) });
                 }
-                
+
                 return response;
             });
         }

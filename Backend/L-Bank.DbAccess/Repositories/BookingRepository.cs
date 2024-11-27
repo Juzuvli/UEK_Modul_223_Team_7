@@ -1,76 +1,102 @@
-using L_Bank_W_Backend.Models;
-using Microsoft.Extensions.Options;
+using System;
 using System.Data.SqlClient;
-using System.Data;
+using L_Bank_W_Backend.DbAccess.Data;
+using L_Bank_W_Backend.Core.Models;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 
 namespace L_Bank_W_Backend.DbAccess.Repositories
 {
     public class BookingRepository : IBookingRepository
     {
         private readonly DatabaseSettings databaseSettings;
+        private readonly ILedgerRepository ledgerRepository; // Hinzufügen der LedgerRepository-Referenz
+        private readonly ILogger<BookingRepository> logger;
 
-        public BookingRepository(IOptions<DatabaseSettings> databaseSettings)
+        public BookingRepository(IOptions<DatabaseSettings> databaseSettings, ILedgerRepository ledgerRepository, ILogger<BookingRepository> logger)
         {
             this.databaseSettings = databaseSettings.Value;
+            this.ledgerRepository = ledgerRepository; // LedgerRepository instanziieren
+            this.logger = logger;
         }
 
         public bool Book(int sourceLedgerId, int destinationLedgerId, decimal amount)
         {
+            bool success = false;
+
             using (SqlConnection conn = new SqlConnection(this.databaseSettings.ConnectionString))
             {
                 conn.Open();
-                using (SqlTransaction transaction = conn.BeginTransaction(IsolationLevel.Serializable))
+                bool retry;
+
+                do
                 {
-                    try
+                    retry = false;
+
+                    using (var transaction = conn.BeginTransaction(System.Data.IsolationLevel.Serializable))
                     {
-                        // Abbuchen vom Quell-Ledger
-                        string debitQuery =
-                            "UPDATE Ledgers SET Balance = Balance - @Amount WHERE Id = @SourceLedgerId AND Balance >= @Amount";
-                        using (SqlCommand debitCommand = new SqlCommand(debitQuery, conn, transaction))
+                        try
                         {
-                            debitCommand.Parameters.AddWithValue("@Amount", amount);
-                            debitCommand.Parameters.AddWithValue("@SourceLedgerId", sourceLedgerId);
-
-                            int rowsAffected = debitCommand.ExecuteNonQuery();
-                            if (rowsAffected == 0)
+                            // Get Source Ledger
+                            var sourceLedger = ledgerRepository.SelectOne(sourceLedgerId, conn, transaction);
+                            if (sourceLedger == null)
                             {
-                                // Kein ausreichender Saldo oder Ledger nicht gefunden
-                                throw new InvalidOperationException(
-                                    "Debit operation failed. Insufficient funds or source ledger not found.");
+                                // Fehlerbehandlung, wenn das Quellkonto nicht gefunden wurde
+                                logger.LogError($"Source ledger not found for ID: {sourceLedgerId}");
+                                throw new Exception("Source ledger not found.");
                             }
-                        }
 
-                        // Gutschrift auf das Ziel-Ledger
-                        string creditQuery =
-                            "UPDATE Ledgers SET Balance = Balance + @Amount WHERE Id = @DestinationLedgerId";
-                        using (SqlCommand creditCommand = new SqlCommand(creditQuery, conn, transaction))
+                            // Überprüfen, ob das Guthaben ausreichend ist
+                            if (sourceLedger.Balance < amount)
+                            {
+                                // Fehlerbehandlung bei unzureichendem Guthaben
+                                logger.LogWarning($"Insufficient funds in source ledger {sourceLedgerId}. Requested amount: {amount}, Available balance: {sourceLedger.Balance}");
+                                throw new Exception("Insufficient funds.");
+                            }
+
+                            // Get Destination Ledger
+                            var destinationLedger = ledgerRepository.SelectOne(destinationLedgerId, conn, transaction);
+                            if (destinationLedger == null)
+                            {
+                                // Fehlerbehandlung, wenn das Zielkonto nicht gefunden wurde
+                                logger.LogError($"Destination ledger not found for ID: {destinationLedgerId}");
+                                throw new Exception("Destination ledger not found.");
+                            }
+
+                            // Update der Salden
+                            sourceLedger.Balance -= amount;
+                            destinationLedger.Balance += amount;
+
+                            // Aktualisieren der Konten in der Datenbank
+                            ledgerRepository.Update(sourceLedger, conn, transaction);
+                            ledgerRepository.Update(destinationLedger, conn, transaction);
+
+                            // Commit der Transaktion
+                            transaction.Commit();
+                            logger.LogInformation($"Booking successful. Transferred {amount} from Ledger {sourceLedgerId} to Ledger {destinationLedgerId}");
+                            success = true;
+                        }
+                        catch (SqlException ex) when (ex.Number == 1205) // Deadlock exception handling
                         {
-                            creditCommand.Parameters.AddWithValue("@Amount", amount);
-                            creditCommand.Parameters.AddWithValue("@DestinationLedgerId", destinationLedgerId);
-
-                            int rowsAffected = creditCommand.ExecuteNonQuery();
-                            if (rowsAffected == 0)
-                            {
-                                // Ziel-Ledger nicht gefunden
-                                throw new InvalidOperationException(
-                                    "Credit operation failed. Destination ledger not found.");
-                            }
+                            // Fehlerbehandlung bei Deadlocks
+                            retry = true;
+                            transaction.Rollback();
+                            logger.LogWarning("Deadlock detected. Retrying transaction.");
                         }
+                        catch (Exception ex)
+                        {
+                            // Allgemeine Fehlerbehandlung
+                            transaction.Rollback();
+                            logger.LogError($"Booking transaction failed: {ex.Message}");
 
-                        // Transaktion abschließen
-                        transaction.Commit();
-                        return true; // Erfolgreich
+                            // Fehlernachricht mit spezifischer Fehlermeldung
+                            throw new Exception($"Booking failed: {ex.Message}");
+                        }
                     }
-                    catch
-                    {
-                        // Rollback der Transaktion bei Fehlern
-                        transaction.Rollback();
-                        return false; // Fehlerhaft
-                    }
-                }
+                } while (retry); // Wiederhole die Transaktion im Falle eines Deadlocks
             }
+
+            return success;
         }
     }
 }
-
-
