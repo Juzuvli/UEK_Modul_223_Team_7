@@ -11,24 +11,28 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.css'],
   standalone: true,
   imports: [CommonModule, FormsModule],
-  providers:  [HttpClient]
+  providers: [HttpClient],
 })
 export class LoginComponent {
   username: string = '';
   password: string = '';
   errorMessage: string = '';
 
-  constructor(private http: HttpClient, private authService: AuthService, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   onSubmit() {
     const loginData = { username: this.username, password: this.password };
 
-    this.http.post('http://localhost:7972/api/v1/Login', loginData).subscribe({
+    this.http.post('http://localhost:5000/api/v1/Login', loginData).subscribe({
       next: (response: any) => {
         console.log('Login successful', response);
         // Handle success (e.g., navigate to another page)
         this.authService.setToken(response.token);
-        
+
         // Redirect to the ledgers page
         this.router.navigate(['/ledgers']);
       },
