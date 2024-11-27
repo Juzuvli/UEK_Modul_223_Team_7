@@ -80,5 +80,4 @@ launchSettings.json
 
 # Mac
 .DS_Store
-./Backend/L-Bank.Cli/appsettings.json
-./Backend/L-Bank.Web/appsettings.json
+appsettings.json
