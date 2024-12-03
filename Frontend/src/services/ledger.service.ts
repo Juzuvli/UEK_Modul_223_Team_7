@@ -25,6 +25,10 @@ export class LedgerService {
     return this.http.post<Ledger>(`${this.apiUrl}/ledgers`, ledger);
   }
 
+  deleteLedger(id: number): Observable<Ledger> {
+    return this.http.delete<Ledger>(`${this.apiUrl}/ledgers/${id}`);
+  }
+
   transferFunds(
     fromLedgerId: number,
     toLedgerId: number,

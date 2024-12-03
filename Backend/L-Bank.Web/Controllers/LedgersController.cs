@@ -71,10 +71,10 @@ namespace L_Bank_W_Backend.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Administrators")]
-        public string Delete(int id)
+        public IActionResult Delete(int id)
         {
             this.ledgerRepository.DeleteLedger(id);
-            return "Ledger with id " + id + " has been deleted";
+            return Ok();
         }
 
         [HttpGet("totalBalance")]

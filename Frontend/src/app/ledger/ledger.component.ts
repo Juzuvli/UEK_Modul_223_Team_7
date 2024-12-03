@@ -85,4 +85,16 @@ export class LedgerComponent implements OnInit {
       this.createMessage = 'Please provide valid data for the new ledger.';
     }
   }
+
+  deleteLedger(id:number): void {
+    this.ledgerService.deleteLedger(id).subscribe(
+      () => {
+        this.loadLedgers(); // Ledgers neu laden, um das neue Ledger anzuzeigen
+      },
+      (error) => {
+        this.createMessage = `Failed to delete ledger: ${error.error.message}`;
+        console.error('Delete ledger error', error);
+      }
+    );
+  }
 }

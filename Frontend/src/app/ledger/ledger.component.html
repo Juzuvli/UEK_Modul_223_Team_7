@@ -3,6 +3,7 @@
     <ul>
       <li *ngFor="let ledger of ledgers">
         <strong>{{ ledger.name }}</strong>: {{ ledger.balance | currency }}
+        <button (click)=deleteLedger(ledger.id)>Delete</button>
       </li>
     </ul>
 
