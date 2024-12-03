@@ -5,5 +5,18 @@
         <strong>{{ ledger.name }}</strong>: {{ ledger.balance | currency }}
       </li>
     </ul>
-  </div>
-  
+
+<!-- Button um ein neues Ledger zu erstellen -->
+<h3>Create a New Ledger</h3>
+<form (ngSubmit)="createLedger()">
+  <label for="ledgerName">Name:</label>
+  <input type="text" id="ledgerName" [(ngModel)]="newLedgerName" name="ledgerName" required />
+
+  <label for="initialBalance">Initial Balance:</label>
+  <input type="number" id="initialBalance" [(ngModel)]="newLedgerBalance" name="initialBalance" required />
+
+  <button type="submit">Create Ledger</button>
+</form>
+
+<div *ngIf="createMessage">{{ createMessage }}</div>
+</div>
