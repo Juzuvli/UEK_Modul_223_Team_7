@@ -14,4 +14,5 @@ public interface ILedgerRepository
     void Update(Ledger ledger);
     decimal? GetBalance(int ledgerId, SqlConnection conn, SqlTransaction transaction);
     Task<int> AddLedger(Ledger ledger);
+    void DeleteLedger(int ledgerId);
 }
