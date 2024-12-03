@@ -18,7 +18,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\L-Bank.Core\L-Bank.Core.csproj" />
+      <ProjectReference Include="..\L-Bank.Core\L-Bank.Core.csproj">
+        <ReferenceSourceTarget></ReferenceSourceTarget>
+      </ProjectReference>
     </ItemGroup>
 
 </Project>

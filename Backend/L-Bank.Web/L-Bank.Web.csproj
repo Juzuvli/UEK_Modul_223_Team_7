@@ -26,11 +26,20 @@
     <Content Update="wwwroot\index.html">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
+    <Content Update="Properties\launchSettings.json">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\L-Bank.Core\L-Bank.Core.csproj" />
-    <ProjectReference Include="..\L-Bank.DbAccess\L-Bank.DbAccess.csproj" />
+    <ProjectReference Include="..\L-Bank.Core\L-Bank.Core.csproj">
+      <ReferenceSourceTarget></ReferenceSourceTarget>
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\L-Bank.DbAccess\L-Bank.DbAccess.csproj">
+      <ReferenceSourceTarget></ReferenceSourceTarget>
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
   </ItemGroup>
 
 </Project>
