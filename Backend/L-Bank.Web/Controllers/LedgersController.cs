@@ -41,12 +41,6 @@ namespace L_Bank_W_Backend.Controllers
         {
             this.ledgerRepository.Update(ledger);
         }
-        [HttpGet("totalBalance")]
-        [Authorize(Roles = "Administrators,Users")]
-        public decimal GetTotalBalance()
-        {
-            return this.ledgerRepository.GetTotalMoney();
-        }
 
         // Controller, um ein neeus Ledger zu erstellen
         [HttpPost]
