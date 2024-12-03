@@ -41,7 +41,13 @@ namespace L_Bank_W_Backend.Controllers
         {
             this.ledgerRepository.Update(ledger);
         }
-        
+        [HttpGet("totalBalance")]
+        [Authorize(Roles = "Administrators,Users")]
+        public decimal GetTotalBalance()
+        {
+            return this.ledgerRepository.GetTotalMoney();
+        }
+
         // Controller, um ein neeus Ledger zu erstellen
         [HttpPost]
         [Authorize(Roles = "Administrators")]
@@ -62,13 +68,20 @@ namespace L_Bank_W_Backend.Controllers
                 return Conflict($"An error occurred: {ex.Message}");
             }
         }
-        
+
         [HttpDelete("{id}")]
         [Authorize(Roles = "Administrators")]
         public string Delete(int id)
         {
             this.ledgerRepository.DeleteLedger(id);
             return "Ledger with id " + id + " has been deleted";
+        }
+
+        [HttpGet("totalBalance")]
+        [Authorize(Roles = "Administrators,Users")]
+        public decimal GetTotalBalance()
+        {
+            return this.ledgerRepository.GetTotalMoney();
         }
     }
 }

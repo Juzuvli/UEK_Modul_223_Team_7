@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L-Bank.DbAccess", "L-Bank.D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L-Bank.Core", "L-Bank.Core\L-Bank.Core.csproj", "{5D1E26D2-0555-45DC-BE36-918A642D6FB6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L-Bank.Tests.Loadtests.cli", "L-Bank.Tests.Loadtests.cli\L-Bank.Tests.Loadtests.cli.csproj", "{ECE37053-3825-4108-B42D-675A89FE3E1D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{5D1E26D2-0555-45DC-BE36-918A642D6FB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D1E26D2-0555-45DC-BE36-918A642D6FB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D1E26D2-0555-45DC-BE36-918A642D6FB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECE37053-3825-4108-B42D-675A89FE3E1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECE37053-3825-4108-B42D-675A89FE3E1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECE37053-3825-4108-B42D-675A89FE3E1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECE37053-3825-4108-B42D-675A89FE3E1D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

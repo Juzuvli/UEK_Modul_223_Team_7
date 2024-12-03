@@ -3,6 +3,8 @@ using NBomber.Contracts.Stats;
 using NBomber.CSharp;
 using NBomber.Http.CSharp;
 using System.Net.Http.Json;
+using System;
+using System.Diagnostics;
 
 Console.WriteLine("Calling LBank Info API...");
 try
@@ -39,14 +41,7 @@ try
     Console.WriteLine($"Total balance after: {totalBalanceAfter}");
 
     // Check if the total balance is consistent
-    if (totalBalanceBefore == totalBalanceAfter)
-    {
-        Console.WriteLine("Total balance is consistent!");
-    }
-    else
-    {
-        Console.WriteLine("Warning: Total balance is not consistent.");
-    }
+    Debug.Assert(totalBalanceBefore == totalBalanceAfter);
 }
 catch (Exception ex)
 {
