@@ -116,21 +116,13 @@ namespace L_Bank_W_Backend
             app.UseCors("AllowAll");
 
             // Configure the HTTP request pipeline.
-            if (!app.Environment.IsDevelopment())
+        
+            app.UseSwagger();
+            app.UseSwaggerUI(options =>
             {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
-            else
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI(options =>
-                {
-                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-                    options.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
-                });
-            }
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                options.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
+            });
 
             // Configure the HTTP request pipeline.
             app.UseHttpsRedirection();
