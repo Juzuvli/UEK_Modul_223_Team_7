@@ -21,6 +21,10 @@ export class LedgerService {
     return new Observable<Ledger[]>();
   }
 
+  createLedger(ledger: Ledger): Observable<Ledger> {
+    return this.http.post<Ledger>(`${this.apiUrl}/ledgers`, ledger);
+  }
+
   transferFunds(
     fromLedgerId: number,
     toLedgerId: number,
@@ -33,4 +37,5 @@ export class LedgerService {
     };
     return this.http.post(`${this.apiUrl}/ledgers/transfer`, payload);
   }
+
 }
