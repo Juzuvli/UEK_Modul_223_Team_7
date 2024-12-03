@@ -41,5 +41,27 @@ namespace L_Bank_W_Backend.Controllers
         {
             this.ledgerRepository.Update(ledger);
         }
+        
+        // Controller, um ein neeus Ledger zu erstellen
+        [HttpPost]
+        [Authorize(Roles = "Administrators")]
+        public async Task<IActionResult> Post([FromBody] Ledger ledger)
+        {
+            if (ledger == null || string.IsNullOrWhiteSpace(ledger.Name))
+            {
+                return BadRequest("Invalid ledger data.");
+            }
+
+            try
+            {
+                var ledgerId = await this.ledgerRepository.AddLedger(ledger);
+                return CreatedAtAction(nameof(Get), new { id = ledgerId }, ledger);
+            }
+            catch (Exception ex)
+            {
+                return Conflict($"An error occurred: {ex.Message}");
+            }
+        }
+
     }
 }
