@@ -41,5 +41,13 @@ namespace L_Bank_W_Backend.Controllers
         {
             this.ledgerRepository.Update(ledger);
         }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrators")]
+        public string Delete(int id)
+        {
+            this.ledgerRepository.DeleteLedger(id);
+            return "Ledger with id " + id + " has been deleted";
+        }
     }
 }

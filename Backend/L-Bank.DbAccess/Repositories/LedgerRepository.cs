@@ -179,4 +179,30 @@ public class LedgerRepository : ILedgerRepository
 
         return null;
     }
+
+    public void DeleteLedger(int ledgerId)
+    {
+        using (SqlConnection conn = new SqlConnection(this.databaseSettings.ConnectionString))
+        {
+            conn.Open();
+            using (SqlTransaction transaction = conn.BeginTransaction(IsolationLevel.Serializable))
+            {
+                if (conn == null)
+                    throw new ArgumentNullException(nameof(conn), "Connection cannot be null.");
+
+                if (transaction == null)
+                    throw new ArgumentNullException(nameof(transaction), "Transaction cannot be null.");
+
+                const string query = $"DELETE FROM Ledgers WHERE id =@Id";
+                using (var cmd = new SqlCommand(query, conn, transaction))
+                {
+                    cmd.Parameters.AddWithValue("@Id", ledgerId);
+                    // Execute the command
+                    cmd.ExecuteNonQuery();
+                    
+                    transaction.Commit();
+                }
+            }
+        }
+    }
 }
