@@ -179,7 +179,30 @@ public class LedgerRepository : ILedgerRepository
 
         return null;
     }
+    
+    // Methode um ein Ledger hinzuzufügen
+    public async Task<int> AddLedger(Ledger ledger)
+    {
+        if (ledger == null)
+        {
+            throw new ArgumentNullException(nameof(ledger));
+        }
 
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+        try
+        {
+            _context.Ledgers.Add(ledger);
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+            return ledger.Id;
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+    
     public void DeleteLedger(int ledgerId)
     {
         using (SqlConnection conn = new SqlConnection(this.databaseSettings.ConnectionString))

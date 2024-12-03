@@ -21,6 +21,11 @@ export class LedgerComponent implements OnInit {
   amount: number | null = null;
   transferMessage: string = '';
 
+  // Neue Variablen für das Erstellen eines Ledgers
+  newLedgerName: string = '';
+  newLedgerBalance: number | null = null;
+  createMessage: string = '';
+
   constructor(private ledgerService: LedgerService) {}
 
   ngOnInit(): void {
@@ -55,6 +60,29 @@ export class LedgerComponent implements OnInit {
         );
     } else {
       this.transferMessage = 'Please fill in all fields with valid data.';
+    }
+  }
+
+  createLedger(): void {
+    if (this.newLedgerName && this.newLedgerBalance !== null) {
+      const newLedger: Ledger = {
+        id: 0, // ID wird vom Backend generiert, daher hier 0
+        name: this.newLedgerName,
+        balance: this.newLedgerBalance,
+      };
+
+      this.ledgerService.createLedger(newLedger).subscribe(
+        () => {
+          this.createMessage = 'Ledger created successfully!';
+          this.loadLedgers(); // Ledgers neu laden, um das neue Ledger anzuzeigen
+        },
+        (error) => {
+          this.createMessage = `Failed to create ledger: ${error.error.message}`;
+          console.error('Create ledger error', error);
+        }
+      );
+    } else {
+      this.createMessage = 'Please provide valid data for the new ledger.';
     }
   }
 }
