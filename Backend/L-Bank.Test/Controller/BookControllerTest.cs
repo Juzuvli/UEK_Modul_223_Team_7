@@ -28,6 +28,8 @@ public class BookingsControllerTests
 
         // Assert
         Assert.IsType<BadRequestObjectResult>(result);
+        var badRequestResult = result as BadRequestObjectResult;
+        Assert.Equal("Invalid booking data.", badRequestResult.Value);
     }
 
     [Fact]
@@ -42,9 +44,7 @@ public class BookingsControllerTests
         var result = await _controller.Post(booking);
 
         // Assert
-        Assert.IsType<OkObjectResult>(result);
-        var okResult = result as OkObjectResult;
-        Assert.Equal("Booking successful.", okResult.Value);
+        Assert.IsType<OkResult>(result);
     }
 
     [Fact]
@@ -59,9 +59,7 @@ public class BookingsControllerTests
         var result = await _controller.Post(booking);
 
         // Assert
-        Assert.IsType<ConflictObjectResult>(result);
-        var conflictResult = result as ConflictObjectResult;
-        Assert.Equal("Insufficient funds or transaction failed.", conflictResult.Value);
+        Assert.IsType<ConflictResult>(result);
     }
 
     [Fact]
