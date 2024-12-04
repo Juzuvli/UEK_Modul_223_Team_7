@@ -42,7 +42,7 @@ namespace L_Bank_W_Backend.Controllers
             this.ledgerRepository.Update(ledger);
         }
 
-        // Controller, um ein neeus Ledger zu erstellen
+        // Controller, um ein neues Ledger zu erstellen
         [HttpPost]
         [Authorize(Roles = "Administrators")]
         public async Task<IActionResult> Post([FromBody] Ledger ledger)
@@ -57,9 +57,9 @@ namespace L_Bank_W_Backend.Controllers
                 var ledgerId = await this.ledgerRepository.AddLedger(ledger);
                 return CreatedAtAction(nameof(Get), new { id = ledgerId }, ledger);
             }
-            catch (Exception ex)
+            catch
             {
-                return Conflict($"An error occurred: {ex.Message}");
+                return StatusCode(500, "An error occurred while creating the ledger.");
             }
         }
 
