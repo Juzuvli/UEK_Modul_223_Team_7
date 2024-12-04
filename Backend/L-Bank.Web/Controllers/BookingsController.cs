@@ -30,7 +30,7 @@ namespace L_Bank_W_Backend.Controllers
                 bool success = await Task.Run(() =>
                     bookingRepository.Book(booking.SourceId, booking.DestinationId, booking.Amount));
 
-                return success ? Ok("Booking successful.") : Conflict("Insufficient funds or transaction failed.");
+                return success ? Ok() : Conflict();
             }
             catch (Exception ex)
             {

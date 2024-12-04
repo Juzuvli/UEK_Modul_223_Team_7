@@ -3,8 +3,7 @@ import { LedgerService } from '../../services/ledger.service';
 import { Ledger } from '../../models/ledger.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '../../services/auth.service';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-ledger',
@@ -44,7 +43,8 @@ export class LedgerComponent implements OnInit {
       this.fromLedgerId !== null &&
       this.toLedgerId !== null &&
       this.amount !== null &&
-      this.amount > 0
+      this.amount > 0 &&
+      this.fromLedgerId !== this.toLedgerId
     ) {
       this.ledgerService
         .transferFunds(this.fromLedgerId, this.toLedgerId, this.amount)

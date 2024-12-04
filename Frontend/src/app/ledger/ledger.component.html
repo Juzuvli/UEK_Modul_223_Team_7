@@ -19,5 +19,26 @@
   <button type="submit">Create Ledger</button>
 </form>
 
+  <h3>Booking</h3>
+  <form (ngSubmit)="makeTransfer()" #transactionForm="ngForm">
+    <p>From:</p>
+    <select [(ngModel)]="fromLedgerId" name="fromLedger" required>
+      <option *ngFor="let ledger of ledgers" [ngValue]="ledger.id">
+        {{ ledger.name }}
+      </option>
+    </select>
+    <br>
+    <p>To:</p>
+    <select [(ngModel)]="toLedgerId" name="toLedger" required>
+      <option *ngFor="let ledger of ledgers" [ngValue]="ledger.id">
+        {{ ledger.name }}
+      </option>
+    </select>
+    <br>
+    <p>Amount:</p>
+    <input type="number" [(ngModel)]="amount" name="amount" required>
+    <br>
+    <button type="submit" [disabled]="!transactionForm.valid">Make Transaction</button>
+  </form>
 <div *ngIf="createMessage">{{ createMessage }}</div>
 </div>
