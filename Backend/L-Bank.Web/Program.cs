@@ -44,6 +44,13 @@ namespace L_Bank_W_Backend
                 .AddJwtBearer(x =>
                 {
                     var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+                    if (jwtSettings == null || string.IsNullOrWhiteSpace(jwtSettings.PrivateKey))
+                    {
+                        throw new InvalidOperationException("JWT settings are not configured properly.");
+                    }
+
+                    var key = Encoding.ASCII.GetBytes(jwtSettings.PrivateKey);
+
 
                     x.RequireHttpsMetadata = false;
                     x.SaveToken = true;
