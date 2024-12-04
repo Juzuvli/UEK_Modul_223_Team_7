@@ -1,23 +1,22 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using Xunit;
 using System.Data.SqlClient;
 using L_Bank_W_Backend.DbAccess;
 using L_Bank_W_Backend.DbAccess.Data; // For DatabaseSettings
 using L_Bank_W_Backend.DbAccess.Repositories; // For BookingRepository, ILedgerRepository
 using L_Bank_W_Backend.Core.Models; // For Ledger
-using System.Collections.Generic; // Needed for List
-using System.Linq; // Needed for Any
+using Microsoft.EntityFrameworkCore; // Needed for Any
 
 
-public class BookingRepositoryUnitTests
+public class UnitTests
 {
     private readonly Mock<ILedgerRepository> _mockLedgerRepository;
     private readonly Mock<ILogger<BookingRepository>> _mockLogger;
     private readonly BookingRepository _bookingRepository;
+    private readonly Mock<IOptions<DatabaseSettings>> _databaseSettingsMock;
 
-    public BookingRepositoryUnitTests()
+    public UnitTests()
     {
         _mockLedgerRepository = new Mock<ILedgerRepository>();
         _mockLogger = new Mock<ILogger<BookingRepository>>();
@@ -29,6 +28,12 @@ public class BookingRepositoryUnitTests
         });
 
         _bookingRepository = new BookingRepository(databaseSettings.Object, _mockLedgerRepository.Object, _mockLogger.Object);
+        
+        _databaseSettingsMock = new Mock<IOptions<DatabaseSettings>>();
+        _databaseSettingsMock.Setup(x => x.Value).Returns(new DatabaseSettings
+        {
+            ConnectionString = "Server=localhost,1433;Database=l_bank_backend;User Id=sa;Password=YourPassword123;TrustServerCertificate=True;"
+        });
     }
 
     // Helper method to capture log messages
@@ -188,6 +193,27 @@ public class BookingRepositoryUnitTests
         // Act & Assert
         var exception = Assert.Throws<Exception>(() => _bookingRepository.Book(1, 2, amount));
         Assert.Equal("Booking failed: Some general error", exception.Message);
+    }
+    
+    [Fact]
+    public async Task Test_Service_Using_RealSqlServer()
+    {
+        var connectionString = "Server=localhost,1433;Database=l_bank_backend;User Id=sa;Password=YourPassword123;TrustServerCertificate=True;";
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseSqlServer(connectionString)
+            .Options;
+
+        await using (var context = new AppDbContext(options))
+        {
+            await context.Database.EnsureCreatedAsync();
+        }
+
+        await using (var context = new AppDbContext(options))
+        {
+            var service = new LedgerRepository(_databaseSettingsMock.Object, context);
+            var result = await service.GetAllLedgers();
+            Assert.NotNull(result);
+        }
     }
 
 }

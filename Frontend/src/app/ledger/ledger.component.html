@@ -40,5 +40,6 @@
     <br>
     <button type="submit" [disabled]="!transactionForm.valid">Make Transaction</button>
   </form>
-<div *ngIf="createMessage">{{ createMessage }}</div>
+
+  <div *ngIf="message">{{ message }}</div>
 </div>

@@ -18,12 +18,11 @@ export class LedgerComponent implements OnInit {
   fromLedgerId: number | null = null;
   toLedgerId: number | null = null;
   amount: number | null = null;
-  transferMessage: string = '';
+  message: string = '';
 
   // Neue Variablen für das Erstellen eines Ledgers
   newLedgerName: string = '';
   newLedgerBalance: number | null = null;
-  createMessage: string = '';
 
   constructor(private ledgerService: LedgerService) {}
 
@@ -50,16 +49,16 @@ export class LedgerComponent implements OnInit {
         .transferFunds(this.fromLedgerId, this.toLedgerId, this.amount)
         .subscribe(
           () => {
-            this.transferMessage = 'Transfer successful!';
+            this.message = `${this.amount}$ have been successfully transferred.`;
             this.loadLedgers(); // Refresh ledger balances
           },
           (error) => {
-            this.transferMessage = `Transfer failed: ${error.error.message}`;
+            this.message = `An error occured while making the transfer.`;
             console.error('Transfer error', error);
           }
         );
     } else {
-      this.transferMessage = 'Please fill in all fields with valid data.';
+      this.message = 'Please fill in all fields with valid data.';
     }
   }
 
@@ -73,16 +72,16 @@ export class LedgerComponent implements OnInit {
 
       this.ledgerService.createLedger(newLedger).subscribe(
         () => {
-          this.createMessage = 'Ledger created successfully!';
+          this.message = this.message = `Ledger "${newLedger.name}" was successfully created!`;
           this.loadLedgers(); // Ledgers neu laden, um das neue Ledger anzuzeigen
         },
         (error) => {
-          this.createMessage = `Failed to create ledger: ${error.error.message}`;
+          this.message = `Failed to create the new ledger named ${newLedger.name}. Error:  ${error.error.message}`;
           console.error('Create ledger error', error);
         }
       );
     } else {
-      this.createMessage = 'Please provide valid data for the new ledger.';
+      this.message = 'Please provide valid data for the new ledger.';
     }
   }
 
@@ -92,7 +91,7 @@ export class LedgerComponent implements OnInit {
         this.loadLedgers(); // Ledgers neu laden, um das neue Ledger anzuzeigen
       },
       (error) => {
-        this.createMessage = `Failed to delete ledger: ${error.error.message}`;
+        this.message = `Failed to delete the ledger with the id ${id}. Error: ${error.error.message}`;
         console.error('Delete ledger error', error);
       }
     );
