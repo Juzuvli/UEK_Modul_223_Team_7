@@ -1,45 +1,49 @@
-<div>
-    <h2>Ledgers</h2>
-    <ul>
-      <li *ngFor="let ledger of ledgers">
+<div class="container">
+  <h2 class="section-title">Ledgers</h2>
+
+  <ul class="ledger-list">
+    <li *ngFor="let ledger of ledgers" class="ledger-item">
+      <div class="ledger-info">
         <strong>{{ ledger.name }}</strong>: {{ ledger.balance | currency }}
-        <button (click)=deleteLedger(ledger.id)>Delete</button>
-      </li>
-    </ul>
+      </div>
+      <button class="btn btn-delete" (click)="deleteLedger(ledger.id)">Delete</button>
+    </li>
+  </ul>
 
-<!-- Button um ein neues Ledger zu erstellen -->
-<h3>Create a New Ledger</h3>
-<form (ngSubmit)="createLedger()">
-  <label for="ledgerName">Name:</label>
-  <input type="text" id="ledgerName" [(ngModel)]="newLedgerName" name="ledgerName" required />
+  <!-- Section to create a new ledger -->
+  <div class="form-section">
+    <h3 class="form-title">Create a New Ledger</h3>
+    <form (ngSubmit)="createLedger()">
+      <label for="ledgerName">Name:</label>
+      <input type="text" id="ledgerName" [(ngModel)]="newLedgerName" name="ledgerName" required />
 
-  <label for="initialBalance">Initial Balance:</label>
-  <input type="number" id="initialBalance" [(ngModel)]="newLedgerBalance" name="initialBalance" required />
+      <label for="initialBalance">Initial Balance:</label>
+      <input type="number" id="initialBalance" [(ngModel)]="newLedgerBalance" name="initialBalance" required />
 
-  <button type="submit">Create Ledger</button>
-</form>
+      <button type="submit" class="btn btn-submit">Create Ledger</button>
+    </form>
+  </div>
 
-  <h3>Booking</h3>
-  <form (ngSubmit)="makeTransfer()" #transactionForm="ngForm">
-    <p>From:</p>
-    <select [(ngModel)]="fromLedgerId" name="fromLedger" required>
-      <option *ngFor="let ledger of ledgers" [ngValue]="ledger.id">
-        {{ ledger.name }}
-      </option>
-    </select>
-    <br>
-    <p>To:</p>
-    <select [(ngModel)]="toLedgerId" name="toLedger" required>
-      <option *ngFor="let ledger of ledgers" [ngValue]="ledger.id">
-        {{ ledger.name }}
-      </option>
-    </select>
-    <br>
-    <p>Amount:</p>
-    <input type="number" [(ngModel)]="amount" name="amount" required>
-    <br>
-    <button type="submit" [disabled]="!transactionForm.valid">Make Transaction</button>
-  </form>
+  <!-- Section to make a booking -->
+  <div class="form-section">
+    <h3 class="form-title">Booking</h3>
+    <form (ngSubmit)="makeTransfer()" #transactionForm="ngForm">
+      <label for="fromLedger">From:</label>
+      <select id="fromLedger" [(ngModel)]="fromLedgerId" name="fromLedger" required>
+        <option *ngFor="let ledger of ledgers" [ngValue]="ledger.id">{{ ledger.name }}</option>
+      </select>
 
-  <div *ngIf="message">{{ message }}</div>
+      <label for="toLedger">To:</label>
+      <select id="toLedger" [(ngModel)]="toLedgerId" name="toLedger" required>
+        <option *ngFor="let ledger of ledgers" [ngValue]="ledger.id" [hidden]="ledger.id === fromLedgerId">{{ ledger.name }}</option>
+      </select>
+
+      <label for="amount">Amount:</label>
+      <input type="number" id="amount" [(ngModel)]="amount" name="amount" required />
+
+      <button type="submit" class="btn btn-submit" [disabled]="!transactionForm.valid">Make Transaction</button>
+    </form>
+  </div>
+
+  <div *ngIf="message" class="message">{{ message }}</div>
 </div>
