@@ -54,10 +54,41 @@ Die Anwendung ermöglicht es mehreren Nutzern gleichzeitig, Transaktionen und Le
 ### Lösungen
 1. **Transaktionssicherheit**:
    - Für kritische Operationen (z.B. das Buchen von Geldbeträgen zwischen zwei Ledgers) werden SQL-Transaktionen verwendet, um sicherzustellen, dass alle Operationen vollständig und konsistent sind. Bei Fehlern wird eine Rollback-Operation durchgeführt.
+   - **Isolationslevel Serializable**:
+     Wir verwenden den höchsten Isolationslevel Serializable für unsere Transaktionen. Dies stellt sicher, dass parallele Transaktionen, die dieselben Daten betreffen, strikt sequenziell abgearbeitet werden.
+     Dadurch werden Phantom Reads, Dirty Reads und Non-Repeatable Reads verhindert, was besonders in einem Bankensystem entscheidend ist, um inkonsistente Buchungen zu vermeiden.
 2. **Optimistische Synchronisation**:
    - Es wurde darauf geachtet, alle Buchungsoperationen so zu implementieren, dass der Zustand der Datenbank durch Sperrungen (Locks) in der Datenbank geschützt wird, um Konflikte zu vermeiden.
 3. **Fehlermanagement**:
    - Deadlocks und Verbindungsprobleme werden durch spezielle Fehlerbehandlung (mit automatischem Wiederholungsmechanismus) adressiert, um zu gewährleisten, dass Operationen korrekt abgeschlossen werden.
+4. **Validierung der Transaktionsauswahl im Frontend**:
+   - Um zu verhindern, dass Benutzer unbeabsichtigt eine Transaktion auf dasselbe Konto durchführen, wurde im Frontend eine Sicherheitsvalidierung implementiert.
+
+#### Umsetzung im Frontend
+
+Beim Erstellen einer Transaktion gibt es zwei Dropdown-Menüs: eines für das Quellkonto (`From Ledger`) und eines für das Zielkonto (`To Ledger`). Um zu vermeiden, dass ein Benutzer dasselbe Konto in beiden Feldern auswählt, wird das aktuell im `From`-Feld gewählte Konto aus der Liste der Optionen im `To`-Dropdown gefiltert.
+
+#### Beispielcode:
+```html
+<label for="fromLedger">From:</label>
+<select id="fromLedger" [(ngModel)]="fromLedgerId" name="fromLedger" required>
+  <option *ngFor="let ledger of ledgers" [ngValue]="ledger.id">{{ ledger.name }}</option>
+</select>
+
+<label for="toLedger">To:</label>
+<select id="toLedger" [(ngModel)]="toLedgerId" name="toLedger" required>
+  <option *ngFor="let ledger of ledgers" [ngValue]="ledger.id" [hidden]="ledger.id === fromLedgerId">
+    {{ ledger.name }}
+  </option>
+</select>
+```
+
+### Vorteile dieser Sicherheitsmassnahme:
+1. **Verhinderung fehlerhafter Transaktionen**: Benutzer können nicht dasselbe Konto als Quell- und Zielkonto auswählen, was Fehler bei Transaktionen vermeidet.
+2. **Verbesserte Benutzerfreundlichkeit**: Die Benutzeroberfläche wird intuitiver, indem automatisch ungültige Optionen aus dem `To`-Dropdown entfernt werden.
+3. **Datensicherheit**: Diese Validierung stellt sicher, dass alle Transaktionen logisch korrekt und sinnvoll sind.
+
+Diese Massnahme ist ein wichtiger Bestandteil der Sicherheitsstrategie und trägt zur Vermeidung von Benutzerfehlern bei, die zu potenziellen Datenanomalien führen könnten.
 
 ## Dokumentation der Tests zur Transaktionssicherheit
 
