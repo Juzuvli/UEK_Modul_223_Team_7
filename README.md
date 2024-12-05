@@ -25,7 +25,7 @@ L-Bank ist eine Webanwendung, die es Nutzern (Administratoren und normalen Benut
 
 ### Backend (L-Bank.Web)
 1. Stelle sicher, dass alle Abhängigkeiten im Verzeichnis installiert sind.
-2. Setze die `appsettings.json` Konfigurationsdateien korrekt (einschließlich der `DatabaseSettings` und `JwtSettings`).
+2. Setze die `appsettings.json` Konfigurationsdateien korrekt (einschliesslich der `DatabaseSettings` und `JwtSettings`).
 3. Führe folgenden Befehl im Verzeichnis des Projekts `L-Bank.Web` aus:
    ```sh
    dotnet run
@@ -46,7 +46,7 @@ L-Bank ist eine Webanwendung, die es Nutzern (Administratoren und normalen Benut
 
 ## Multi-User-Probleme und ihre Lösungen
 
-Die Anwendung ermöglicht es mehreren Nutzern gleichzeitig, Transaktionen und Ledger-Operationen auszuführen. Die größten Multi-User-Probleme betreffen hier:
+Die Anwendung ermöglicht es mehreren Nutzern gleichzeitig, Transaktionen und Ledger-Operationen auszuführen. Die grössten Multi-User-Probleme betreffen hier:
 
 - **Konsistenz der Daten** bei parallelen Zugriffen (z.B. wenn zwei Benutzer versuchen, gleichzeitig denselben Ledger zu bearbeiten).
 - **Deadlocks**, wenn mehrere Transaktionen um dieselben Ressourcen konkurrieren.
@@ -63,7 +63,7 @@ Die Anwendung ermöglicht es mehreren Nutzern gleichzeitig, Transaktionen und Le
 
 Die Anwendung umfasst umfassende Unit- und Loadtests, um die Transaktionssicherheit und das Verhalten der Buchungen zu prüfen. Die Tests befinden sich in folgenden Projekten:
 
-#### Unit-Tests: L-Bank.Concurrent.UnitTests
+### Unit-Tests: L-Bank.Concurrent.UnitTests
 - Datei: UnitTests.cs
 
 ```sh
@@ -88,12 +88,12 @@ Test_Service_Using_RealSqlServer
 Testet Datenbankzugriffe mit einem echten SQL Server.
 
 
-#### Loadtests: L-Bank.Tests.Loadtests.cli
+### Loadtests: L-Bank.Tests.Loadtests.cli
 Datei: LoadTests.cs
 #### Authentifizierung
 Simuliert Logins und API-Calls, um Zugriffstoken zu generieren.
 
-### API-Tests
+#### API-Tests
 Szenarien:
 ```sh
 http_scenario
